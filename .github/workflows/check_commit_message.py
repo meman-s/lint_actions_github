@@ -32,7 +32,7 @@ If there are errors, output "INVALID: <list of errors>".
 
 
 response = openai.ChatCompletion.create(
-    model="GPT-4",
+    model="gpt-4o",
     messages=[{"role": "system", "content": PROMPT}]
 )
 
