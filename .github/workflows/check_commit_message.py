@@ -1,46 +1,61 @@
 import os
-import openai
+import sys
+import requests
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
+print(5555)
 
-with open("commit_messages.txt", "r", encoding="utf-8") as f:
-    commit_messages = f.readlines()
+API_URL = "https://api-inference.huggingface.co/models/facebook/bart-large-mnli"
+HF_API_KEY = os.getenv("HF_API_KEY")
 
-prompt = f"""
-You need to check commit messages for compliance with a strict format.
+with open("commit_messages.txt", "r", encoding="utf-8") as file:
+    commit_messages = file.read().strip().split('\n')
+
+commit_messages = [
+    msg for msg in commit_messages if not msg.lower().startswith("merge")]
+
+PROMPT_TEMPLATE = """
+You need to check the following commit message for compliance with a strict format.
 
 Commit format:
 1. It must start with an emoji.
 2. After the emoji, there must be a whitespace.
-2. After the whitespace, there must be a code repository in parentheses.
-3. After the category, there must be a colon, whitespace and a description.
-4. The emoji must match the commit message.
+3. After the whitespace, there must be a code repository in parentheses.
+4. After the category, there must be a colon, whitespace, and a description.
+5. The emoji must match the commit message.
 
 Examples of correct commits:
 🔥 (requests): Remove async_request_disk_folder_move_to function
 🏷️ (commands): Add return type annotation to disk_folder_upload_file command
 ♻️ (rest_api): Add APICommand classes to __init__.py exports
 
-Here are the commit messages to check:
-{commit_messages}
+Commit message to check:
+"{commit_message}"
 
-Output "VALID" if all commit messages follow the format.
+Output only "YES" if the commit message follows the format.
 If there are errors, output "INVALID: <list of errors>".
 """
 
+headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
-response = openai.ChatCompletion.create(
-    model="gpt-4o",
-    messages=[{"role": "system", "content": prompt}]
-)
+VALID = True
 
-result = response["choices"][0]["message"]["content"].strip()
+for message in commit_messages:
+    prompt = PROMPT_TEMPLATE.format(commit_message=message)
+    payload = {"inputs": prompt}
 
-if "VALID" in result:
-    print("✅ Commit messages are valid")
-    exit(0)
+    response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+    result = response.json()
+
+    output = result.get("generated_text", "") if isinstance(result, dict) else str(result)
+
+    if "VALID" in output:
+        print(f"✅ Commit message is valid: {message}")
+    else:
+        print(f"❌ Invalid commit message: {message}")
+        print(f"Reason: {output}")
+        VALID = False
+
+if VALID:
+    sys.exit(0)
 else:
-    print("❌ Commit messages have problems:")
-    print(result)
-    exit(1)
+    sys.exit(1)
