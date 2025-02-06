@@ -1,0 +1,22 @@
+name: Check Commit Message
+
+on:
+  pull_request:
+
+jobs:
+  check-commit-message:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get commit messages
+        run: |
+          git log --format="%s" -n 5 > commit_messages.txt
+
+      - name: Validate message with ChatGPT
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python .github/scripts/check_commit_message.py
