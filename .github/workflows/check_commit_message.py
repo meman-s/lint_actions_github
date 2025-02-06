@@ -1,9 +1,10 @@
 import sys
 import os
-import openai
+from openai import OpenAI
+
 
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openai.api_key = OPENAI_API_KEY
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 with open("commit_messages.txt", "r", encoding="utf-8") as f:
     commit_messages = f.readlines()
@@ -31,12 +32,15 @@ If there are errors, output "INVALID: <list of errors>".
 """
 
 
-response = openai.ChatCompletion.create(
-    model="gpt-4o",
-    messages=[{"role": "system", "content": PROMPT}]
+response = client.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "You are a commit message validator."},
+        {"role": "user", "content": PROMPT}
+    ]
 )
 
-result = response["choices"][0]["message"]["content"].strip()
+result = response.choices[0].message.content.strip()
 
 if "VALID" in result:
     print("✅ Commit messages are valid")
