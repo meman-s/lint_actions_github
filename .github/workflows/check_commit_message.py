@@ -33,7 +33,7 @@ If there are errors, output "INVALID: <list of errors>".
 
 
 response = client.chat.completions.create(
-    model="gpt-4",
+    model="gpt-3.5-turbo",
     messages=[
         {"role": "system", "content": "You are a commit message validator."},
         {"role": "user", "content": PROMPT}
