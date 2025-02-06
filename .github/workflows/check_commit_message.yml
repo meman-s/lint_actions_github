@@ -25,4 +25,4 @@ jobs:
         env:
           HF_API_KEY: ${{ secrets.HF_API_KEY }}
         run: |
-          python .github/workflows/check_commit_message_hf.py
+          python .github/workflows/check_commit_message.py
