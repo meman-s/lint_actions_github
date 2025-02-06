@@ -49,10 +49,10 @@ for message in commit_messages:
         result, dict) else str(result)
 
     if "VALID" in output:
-        print(f"✅ Commit message is valid: {message}")
+        print(f"✅ Commit message is valid: {message}", flush=True)
     else:
-        print(f"❌ Invalid commit message: {message}")
-        print(f"Reason: {output}")
+        print(f"❌ Invalid commit message: {message}", flush=True)
+        print(f"Reason: {output}", flush=True)
         VALID = False
 
 if VALID:
