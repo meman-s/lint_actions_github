@@ -28,13 +28,13 @@ jobs:
 
       - name: Run pylint
         run: |
-          pylint --disable=C0114,C0115,C0116,W0622 --max-line-length=128 $(git ls-files '*.py') | tee pylint.log
-          if grep -qE "E[0-9]{4}:" pylint.log; then exit 1; fi
-
+          pylint \
+            --disable=C0114,C0115,C0116,W0622 \
+            --max-line-length=128 \
+            --output-format=colorized \
+            $(git ls-files '*.py')
 
       - name: Run flake8
         run: |
-          flake8 --max-line-length=128 | tee flake8.log
-          if grep -qE "(E[0-9]{3}|F[0-9]{3}|W292)" flake8.log; then exit 1; fi
-
-
+          flake8 \
+            --max-line-length=128 \
