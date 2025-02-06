@@ -39,10 +39,11 @@ VALID = True
 for message in commit_messages:
     prompt = PROMPT_TEMPLATE.format(commit_message=message)
     payload = {"inputs": prompt}
-
+    print(payload)
     response = requests.post(API_URL, headers=headers,
                              json=payload, timeout=30)
     result = response.json()
+    print(result)
 
     output = result.get("generated_text", "") if isinstance(
         result, dict) else str(result)
