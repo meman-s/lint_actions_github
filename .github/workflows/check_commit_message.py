@@ -8,6 +8,8 @@ HF_API_KEY = os.getenv("HF_API_KEY")
 with open("commit_messages.txt", "r", encoding="utf-8") as file:
     commit_messages = file.read().strip().split('\n')
 
+commit_messages = [msg for msg in commit_messages if not msg.lower().startswith("merge")]
+
 PROMPT_TEMPLATE = """
 You need to check the following commit message for compliance with a strict format.
 
