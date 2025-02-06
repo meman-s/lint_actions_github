@@ -35,5 +35,6 @@ jobs:
       - name: Run flake8
         run: |
           flake8 --max-line-length=128 | tee flake8.log
-          if grep -qE "E[0-9]{3}|F[0-9]{3}" flake8.log; then exit 1; fi
+          if grep -qE "(E[0-9]{3}|F[0-9]{3}|W292)" flake8.log; then exit 1; fi
+
 
