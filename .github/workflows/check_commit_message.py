@@ -1,3 +1,4 @@
+import sys
 import os
 import openai
 
@@ -7,7 +8,7 @@ openai.api_key = OPENAI_API_KEY
 with open("commit_messages.txt", "r", encoding="utf-8") as f:
     commit_messages = f.readlines()
 
-prompt = f"""
+PROMPT = f"""
 You need to check commit messages for compliance with a strict format.
 
 Commit format:
@@ -32,15 +33,15 @@ If there are errors, output "INVALID: <list of errors>".
 
 response = openai.ChatCompletion.create(
     model="gpt-4o",
-    messages=[{"role": "system", "content": prompt}]
+    messages=[{"role": "system", "content": PROMPT}]
 )
 
 result = response["choices"][0]["message"]["content"].strip()
 
 if "VALID" in result:
     print("✅ Commit messages are valid")
-    exit(0)
+    sys.exit(0)
 else:
     print("❌ Commit messages have problems:")
     print(result)
-    exit(1)
+    sys.exit(1)
