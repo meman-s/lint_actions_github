@@ -35,25 +35,19 @@ If there are errors, output "INVALID: <list of errors>".
 
 headers = {"Authorization": f"Bearer {HF_API_KEY}"}
 
-VALID = True
-
 for message in commit_messages:
     prompt = PROMPT_TEMPLATE.format(commit_message=message)
     payload = {"inputs": prompt}
 
-    response = requests.post(API_URL, headers=headers, json=payload, timeout=30)
+    response = requests.post(API_URL, headers=headers,json=payload, timeout=30)
     result = response.json()
 
     output = result.get("generated_text", "") if isinstance(result, dict) else str(result)
 
     if "VALID" in output:
         print(f"✅ Commit message is valid: {message}")
+        sys.exit(0)
     else:
         print(f"❌ Invalid commit message: {message}")
         print(f"Reason: {output}")
-        VALID = False
-
-if VALID:
-    sys.exit(0)
-else:
-    sys.exit(1)
+        sys.exit(1)
