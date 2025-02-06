@@ -19,4 +19,4 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          python .github/scripts/check_commit_message.py
+          python .github/workflows/check_commit_message.py
