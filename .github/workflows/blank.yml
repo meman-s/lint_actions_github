@@ -1,0 +1,37 @@
+name: Python Lint
+
+on:
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      matrix:
+        python-version: ["3.13"]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+          pip install pylint flake8
+
+      - name: Run pylint
+        run: |
+          pylint $(git ls-files '*.py') | tee pylint.log
+          if grep -qE "E[0-9]{4}:" pylint.log; then exit 1; fi
+
+      - name: Run flake8
+        run: |
+          flake8 --config=.flake8 | tee flake8.log
+          if grep -qE "E[0-9]{3}|F[0-9]{3}" flake8.log; then exit 1; fi
